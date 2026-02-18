@@ -443,9 +443,29 @@ function updateStocksCount(): void {
 // ─── Clear Results ────────────────────────────────────────────────────────────
 
 function clearResults(): void {
-  // Reset results state
+  // Reset results + error state
   state.results = [];
   state.error = null;
+
+  // Reset stocks to a single blank row
+  state.stocks = [{ id: crypto.randomUUID(), symbol: '', avgBuyPrice: '' }];
+
+  // Re-render the stocks container with the fresh blank row
+  stocksContainer.innerHTML = '';
+  state.stocks.forEach((row) => stocksContainer.appendChild(createStockRowEl(row)));
+  updateRemoveButtons();
+  updateStocksCount();
+
+  // Reset the select dropdowns to their defaults
+  exchangeSelect.value = 'NSE';
+  horizonSelect.value = 'MEDIUM_TERM';
+  riskSelect.value = 'MODERATE';
+  state.exchange = 'NSE';
+  state.horizon = 'MEDIUM_TERM';
+  state.riskProfile = 'MODERATE';
+
+  // Hide any lingering inline validation error
+  clearInlineError();
 
   // Clear the results section
   resultsSection.innerHTML = '';
