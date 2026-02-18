@@ -83,6 +83,8 @@ function createStockRowEl(row: StockRow): HTMLElement {
           stock.avgBuyPrice = input.value;
         }
       }
+      // Dismiss the inline validation error as soon as the user edits any field
+      clearInlineError();
     });
   });
 
