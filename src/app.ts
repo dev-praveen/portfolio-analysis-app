@@ -164,7 +164,7 @@ async function handleAnalyze(): Promise<void> {
       { symbolAndAveragePriceList: state.stocks.map((s) => ({ symbol: s.symbol, avgBuyPrice: s.avgBuyPrice })) },
     );
     state.results = results;
-    renderResults(resultsSection, results);
+    renderResults(resultsSection, results, clearResults);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
     state.error = message;
@@ -436,4 +436,19 @@ function updateStocksCount(): void {
     const n = state.stocks.length;
     badge.textContent = `${n} stock${n !== 1 ? 's' : ''}`;
   }
+}
+
+// ─── Clear Results ────────────────────────────────────────────────────────────
+
+function clearResults(): void {
+  // Reset results state
+  state.results = [];
+  state.error = null;
+
+  // Clear the results section
+  resultsSection.innerHTML = '';
+
+  // Scroll back up to the form
+  const formCard = document.getElementById('form-card');
+  formCard?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
