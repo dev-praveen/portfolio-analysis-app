@@ -8,7 +8,7 @@ import type {
 // In production builds, VITE_API_BASE_URL must be set (e.g. https://api.example.com).
 // Fallback to empty string so relative URLs are used when no env var is provided.
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
-const REQUEST_TIMEOUT_MS = 60_000;
+const REQUEST_TIMEOUT_MS = 100_000;
 
 export async function analyzePortfolio(
   params: AnalyzePortfolioParams,

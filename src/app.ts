@@ -181,6 +181,28 @@ function setLoadingState(loading: boolean): void {
   const btnSpinner = analyzeBtn.querySelector<HTMLElement>('.btn-spinner');
   if (btnText) btnText.style.opacity = loading ? '0' : '1';
   if (btnSpinner) btnSpinner.style.opacity = loading ? '1' : '0';
+  setFormDisabled(loading);
+}
+
+// Disable/enable every interactive control inside the form card and apply a
+// visual greyed-out overlay so the user knows the form is locked during analysis.
+function setFormDisabled(disabled: boolean): void {
+  const fieldset = document.getElementById('form-fieldset') as HTMLFieldSetElement | null;
+  const formCard = document.getElementById('form-card');
+
+  if (fieldset) fieldset.disabled = disabled;
+
+  if (formCard) {
+    if (disabled) {
+      formCard.style.opacity = '0.5';
+      formCard.style.pointerEvents = 'none';
+      formCard.style.transition = 'opacity 0.3s ease';
+    } else {
+      formCard.style.opacity = '1';
+      formCard.style.pointerEvents = '';
+      formCard.style.transition = 'opacity 0.3s ease';
+    }
+  }
 }
 
 function showInlineError(msg: string): void {
@@ -254,7 +276,7 @@ function buildAppShell(): string {
       </header>
 
       <!-- ── Form Card ── -->
-      <section class="rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm shadow-2xl shadow-black/40 overflow-hidden">
+      <section id="form-card" class="rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm shadow-2xl shadow-black/40 overflow-hidden">
 
         <!-- Card header -->
         <div class="flex items-center gap-4 px-6 py-5 border-b border-white/[0.06] bg-white/[0.02]">
@@ -271,6 +293,7 @@ function buildAppShell(): string {
           </div>
         </div>
 
+        <fieldset id="form-fieldset" class="contents">
         <div class="p-6 space-y-6">
           <!-- Selects grid -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -364,6 +387,7 @@ function buildAppShell(): string {
             </button>
           </div>
         </div>
+        </fieldset>
       </section>
 
       <!-- ── Results ── -->
