@@ -112,7 +112,9 @@ function addStock(): void {
 function removeStock(id: string): void {
   if (state.stocks.length === 1) return;
   state.stocks = state.stocks.filter((s) => s.id !== id);
-  const el = stocksContainer.querySelector<HTMLElement>(`[data-id="${id}"]`);
+  // Use div[data-id] to unambiguously target the row container,
+  // not the remove button inside it which also carries data-id.
+  const el = stocksContainer.querySelector<HTMLElement>(`div[data-id="${id}"]`);
   if (el) {
     el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
     el.style.opacity = '0';
@@ -189,7 +191,14 @@ function showInlineError(msg: string): void {
     errEl.className = 'flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-300 text-sm';
     analyzeBtn.parentElement?.insertBefore(errEl, analyzeBtn);
   }
-  errEl.innerHTML = `<span class="text-red-400">⚠</span> ${msg}`;
+  // Use textContent for the message to prevent XSS — build the node structure manually
+  errEl.innerHTML = '';
+  const icon = document.createElement('span');
+  icon.className = 'text-red-400';
+  icon.textContent = '⚠';
+  const text = document.createTextNode(` ${msg}`);
+  errEl.appendChild(icon);
+  errEl.appendChild(text);
   errEl.style.display = 'flex';
 }
 
