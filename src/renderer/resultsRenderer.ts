@@ -227,8 +227,12 @@ function wireAccordion(container: HTMLElement): void {
       // If this card was collapsed, expand it; if it was already open, leave all closed
       if (!isExpanded) {
         expandCard(card);
-        // Scroll the card header into view smoothly
-        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Wait for the expand animation to finish (350ms), then scroll so the
+        // full card body is visible — using 'start' so the card header stays
+        // anchored at the top of the viewport and the content scrolls into view.
+        setTimeout(() => {
+          card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 360);
       }
     });
   });
