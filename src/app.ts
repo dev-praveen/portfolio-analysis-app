@@ -4,7 +4,7 @@ import { renderResults, renderError, renderLoading } from './renderer/resultsRen
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
-let state: AppState = {
+const state: AppState = {
   stocks: [{ id: crypto.randomUUID(), symbol: '', avgBuyPrice: '' }],
   exchange: 'NSE',
   horizon: 'MEDIUM_TERM',
@@ -138,9 +138,9 @@ function updateRemoveButtons(): void {
 function validate(): string | null {
   for (const stock of state.stocks) {
     if (!stock.symbol.trim()) return 'Please enter a stock symbol for all rows.';
-    if (!stock.avgBuyPrice || isNaN(parseFloat(stock.avgBuyPrice)))
+    if (!stock.avgBuyPrice || Number.isNaN(Number.parseFloat(stock.avgBuyPrice)))
       return `Please enter a valid average buy price for ${stock.symbol || 'all stocks'}.`;
-    if (parseFloat(stock.avgBuyPrice) <= 0)
+    if (Number.parseFloat(stock.avgBuyPrice) <= 0)
       return `Average buy price must be greater than 0 for ${stock.symbol}.`;
   }
   return null;
@@ -436,7 +436,7 @@ function updateStocksCount(): void {
   const badge = document.getElementById('stocks-count');
   if (badge) {
     const n = state.stocks.length;
-    badge.textContent = `${n} stock${n !== 1 ? 's' : ''}`;
+    badge.textContent = `${n} stock${n === 1 ? '' : 's'}`;
   }
 }
 
