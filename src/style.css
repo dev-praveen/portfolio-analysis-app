@@ -5,6 +5,92 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
+/* ─── CSS Variables for Theming ─────────────────────────────────────────── */
+
+:root {
+  /* Default (Dark) Theme */
+  --bg-primary: #080810;
+  --bg-secondary: rgba(255, 255, 255, 0.04);
+  --bg-tertiary: rgba(255, 255, 255, 0.03);
+  --bg-input: rgba(255, 255, 255, 0.05);
+  --bg-input-focus: rgba(255, 255, 255, 0.08);
+  --bg-hover: rgba(255, 255, 255, 0.02);
+  --bg-card-header: rgba(255, 255, 255, 0.02);
+  
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.50);
+  --text-muted: rgba(255, 255, 255, 0.40);
+  --text-placeholder: rgba(255, 255, 255, 0.25);
+  --text-subtle: rgba(255, 255, 255, 0.35);
+  --text-chevron: rgba(255, 255, 255, 0.40);
+  
+  --border-primary: rgba(255, 255, 255, 0.08);
+  --border-secondary: rgba(255, 255, 255, 0.06);
+  --border-input: rgba(255, 255, 255, 0.10);
+  --border-focus: rgba(99, 102, 241, 0.60);
+  
+  --shadow-card: rgba(0, 0, 0, 0.40);
+  --shadow-black: rgba(0, 0, 0, 0.30);
+  
+  --indigo-text: #a5b4fc;
+  --indigo-text-muted: rgba(165, 180, 252, 0.70);
+  --indigo-bg: rgba(99, 102, 241, 0.15);
+  --indigo-border: rgba(99, 102, 241, 0.25);
+  --indigo-bg-subtle: rgba(99, 102, 241, 0.10);
+  --indigo-border-subtle: rgba(99, 102, 241, 0.20);
+  
+  --violet-bg-subtle: rgba(139, 92, 246, 0.06);
+  --violet-border-subtle: rgba(139, 92, 246, 0.15);
+  --violet-text: #c4b5fd;
+  --violet-text-muted: rgba(196, 181, 253, 0.80);
+  
+  --option-bg: #1a1a2e;
+}
+
+[data-theme="light"] {
+  /* Light Theme */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-input: #f8fafc;
+  --bg-input-focus: #f1f5f9;
+  --bg-hover: #f8fafc;
+  --bg-card-header: #f8fafc;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-tertiary: #475569;
+  --text-muted: #64748b;
+  --text-placeholder: #94a3b8;
+  --text-subtle: #94a3b8;
+  --text-chevron: #64748b;
+  
+  --border-primary: #e2e8f0;
+  --border-secondary: #e2e8f0;
+  --border-input: #cbd5e1;
+  --border-focus: #6366f1;
+  
+  --shadow-card: rgba(0, 0, 0, 0.08);
+  --shadow-black: rgba(0, 0, 0, 0.05);
+  
+  --indigo-text: #4f46e5;
+  --indigo-text-muted: rgba(79, 70, 229, 0.70);
+  --indigo-bg: rgba(99, 102, 241, 0.10);
+  --indigo-border: rgba(99, 102, 241, 0.25);
+  --indigo-bg-subtle: rgba(99, 102, 241, 0.08);
+  --indigo-border-subtle: rgba(99, 102, 241, 0.15);
+  
+  --violet-bg-subtle: rgba(139, 92, 246, 0.06);
+  --violet-border-subtle: rgba(139, 92, 246, 0.12);
+  --violet-text: #7c3aed;
+  --violet-text-muted: rgba(124, 58, 237, 0.80);
+  
+  --option-bg: #ffffff;
+}
+
+/* ─── Animations ──────────────────────────────────────────────────────────── */
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -38,4 +124,60 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 input[type=number] { -moz-appearance: textfield; }
+
+/* ─── Theme Toggle Button Styles ──────────────────────────────────────────── */
+
+.theme-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-input);
+  color: var(--text-primary);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.theme-toggle .sun-icon {
+  position: absolute;
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.theme-toggle .moon-icon {
+  position: absolute;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+[data-theme="light"] .theme-toggle .sun-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+[data-theme="light"] .theme-toggle .moon-icon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
 
