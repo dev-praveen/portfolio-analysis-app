@@ -15,12 +15,12 @@ function getStoredTheme(): Theme {
 }
 
 function setTheme(theme: Theme): void {
-  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.dataset.theme = theme;
   localStorage.setItem(THEME_KEY, theme);
 }
 
 function toggleTheme(): void {
-  const current = document.documentElement.getAttribute('data-theme') as Theme;
+  const current = document.documentElement.dataset.theme as Theme;
   const next = current === 'dark' ? 'light' : 'dark';
   setTheme(next);
 }
@@ -281,7 +281,7 @@ function buildAppShell(): string {
   <div class="fixed bottom-1/4 -right-40 -z-10 w-96 h-96 rounded-full bg-violet-600/10 blur-[120px]"></div>
 
   <!-- Theme Toggle Button (Top Right) -->
-  <button id="theme-toggle" class="theme-toggle fixed top-4 right-4 z-50" type="button" aria-label="Toggle theme">
+  <button id="theme-toggle" class="theme-toggle" style="position: fixed; top: 1rem; right: 1rem; z-index: 50;" type="button" aria-label="Toggle theme">
     <!-- Sun Icon (shown in light mode) -->
     <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="5"></circle>

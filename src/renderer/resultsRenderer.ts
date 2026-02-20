@@ -4,11 +4,11 @@ import type { PortfolioAnalysisResponse } from '../types/portfolio.ts';
 
 function escHtml(str: string): string {
   return str
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
-    .replace(/'/g, '&#039;');
+    .replaceAll('&', '&')
+    .replaceAll('<', '<')
+    .replaceAll('>', '>')
+    .replaceAll('"', '"')
+    .replaceAll('\'', '&#039;');
 }
 
 function sentimentConfig(sentiment: string): { pillStyle: string; icon: string } {
@@ -258,7 +258,7 @@ export function renderResults(
         </h2>
         <div class="flex items-center gap-3">
           <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo-text);">
-            ${results.length} stock${results.length !== 1 ? 's' : ''}
+            ${results.length} stock${results.length === 1 ? '' : 's'}
           </span>
           <button
             id="clear-results-btn"
