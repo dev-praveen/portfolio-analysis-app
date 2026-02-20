@@ -2,6 +2,34 @@ import type { AppState, Exchange, InvestmentHorizon, RiskProfile, StockRow } fro
 import { analyzePortfolio } from './api/portfolioApi.ts';
 import { renderResults, renderError, renderLoading } from './renderer/resultsRenderer.ts';
 
+// ─── Theme Management ─────────────────────────────────────────────────────────
+
+type Theme = 'dark' | 'light';
+
+const THEME_KEY = 'portfolio-intelligence-theme';
+
+function getStoredTheme(): Theme {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === 'light' || stored === 'dark') return stored;
+  return 'dark'; // Default to dark
+}
+
+function setTheme(theme: Theme): void {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function toggleTheme(): void {
+  const current = document.documentElement.dataset.theme as Theme;
+  const next = current === 'dark' ? 'light' : 'dark';
+  setTheme(next);
+}
+
+function initTheme(): void {
+  const theme = getStoredTheme();
+  setTheme(theme);
+}
+
 // ─── State ────────────────────────────────────────────────────────────────────
 
 const state: AppState = {
@@ -27,16 +55,21 @@ let riskSelect: HTMLSelectElement;
 
 function createStockRowEl(row: StockRow): HTMLElement {
   const div = document.createElement('div');
-  div.className = 'flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.07] transition-all duration-300';
+  div.className = 'flex items-center gap-3 p-4 rounded-xl transition-all duration-300';
+  div.style.background = 'var(--bg-tertiary)';
+  div.style.border = '1px solid var(--border-primary)';
   div.dataset['id'] = row.id;
 
   div.innerHTML = `
     <div class="flex flex-1 items-center gap-3 flex-wrap sm:flex-nowrap">
       <div class="flex-1 min-w-0">
-        <label class="block text-xs font-medium text-indigo-300/70 mb-1.5 uppercase tracking-wider">Stock Symbol</label>
+        <label class="block text-xs font-medium mb-1.5 uppercase tracking-wider" style="color: var(--indigo-text-muted);">Stock Symbol</label>
         <input
           type="text"
-          class="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-3.5 py-2.5 text-white placeholder-white/25 text-sm font-mono font-semibold tracking-widest focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.08] transition-all duration-200"
+          class="w-full rounded-lg px-3.5 py-2.5 text-sm font-mono font-semibold tracking-widest focus:outline-none transition-all duration-200"
+          style="background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary);"
+          onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
+          onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'"
           placeholder="e.g., RELIANCE"
           value="${row.symbol}"
           data-field="symbol"
@@ -45,10 +78,13 @@ function createStockRowEl(row: StockRow): HTMLElement {
         />
       </div>
       <div class="flex-1 min-w-0">
-        <label class="block text-xs font-medium text-indigo-300/70 mb-1.5 uppercase tracking-wider">Avg Buy Price</label>
+        <label class="block text-xs font-medium mb-1.5 uppercase tracking-wider" style="color: var(--indigo-text-muted);">Avg Buy Price</label>
         <input
           type="number"
-          class="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-3.5 py-2.5 text-white placeholder-white/25 text-sm focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.08] transition-all duration-200"
+          class="w-full rounded-lg px-3.5 py-2.5 text-sm focus:outline-none transition-all duration-200"
+          style="background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary);"
+          onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
+          onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'"
           placeholder="e.g., 1400.50"
           value="${row.avgBuyPrice}"
           data-field="avgBuyPrice"
@@ -58,7 +94,10 @@ function createStockRowEl(row: StockRow): HTMLElement {
       </div>
     </div>
     <button
-      class="remove-stock-btn flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all duration-200 disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:text-white/30 disabled:hover:bg-transparent disabled:hover:border-transparent"
+      class="remove-stock-btn flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200 disabled:opacity-20 disabled:cursor-not-allowed"
+      style="color: var(--text-placeholder); border: 1px solid transparent;"
+      onmouseover="if(!this.disabled){this.style.color='#f87171'; this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.2)'}"
+      onmouseout="if(!this.disabled){this.style.color='var(--text-placeholder)'; this.style.background='transparent'; this.style.borderColor='transparent'}"
       data-id="${row.id}"
       title="Remove stock"
       ${state.stocks.length === 1 ? 'disabled' : ''}
@@ -236,18 +275,39 @@ function clearInlineError(): void {
 function buildAppShell(): string {
   return `
   <!-- Ambient background -->
-  <div class="fixed inset-0 -z-10 bg-[#080810]"></div>
+  <div class="fixed inset-0 -z-10" style="background: var(--bg-primary);"></div>
   <div class="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(99,102,241,0.18),transparent)]"></div>
   <div class="fixed top-1/3 -left-40 -z-10 w-96 h-96 rounded-full bg-indigo-600/10 blur-[120px]"></div>
   <div class="fixed bottom-1/4 -right-40 -z-10 w-96 h-96 rounded-full bg-violet-600/10 blur-[120px]"></div>
 
+  <!-- Theme Toggle Button (Top Right) -->
+  <button id="theme-toggle" class="theme-toggle" style="position: fixed; top: 1rem; right: 1rem; z-index: 50;" type="button" aria-label="Toggle theme">
+    <!-- Sun Icon (shown in light mode) -->
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+    <!-- Moon Icon (shown in dark mode) -->
+    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+
   <!-- Page -->
-  <div class="min-h-screen text-white">
+  <div class="min-h-screen" style="color: var(--text-primary);">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-10">
 
       <!-- ── Hero ── -->
       <header class="text-center space-y-6">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs font-semibold tracking-widest uppercase">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase"
+             style="background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo-text);">
           <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 hero-badge-dot"></span>
           AI-Powered Analysis
         </div>
@@ -255,34 +315,37 @@ function buildAppShell(): string {
           Portfolio<br/>
           <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">Intelligence</span>
         </h1>
-        <p class="max-w-xl mx-auto text-white/50 text-base sm:text-lg leading-relaxed">
+        <p class="max-w-xl mx-auto text-base sm:text-lg leading-relaxed" style="color: var(--text-muted);">
           Get real-time AI insights and actionable recommendations for your stock portfolio
           based on the latest market news, events, and fundamentals.
         </p>
         <div class="flex items-center justify-center gap-6 pt-2">
           <div class="text-center">
-            <div class="text-sm font-bold text-white/80">NSE · BSE</div>
-            <div class="text-xs text-white/35 mt-0.5">Indian Markets</div>
+            <div class="text-sm font-bold" style="color: var(--text-secondary);">NSE · BSE</div>
+            <div class="text-xs mt-0.5" style="color: var(--text-subtle);">Indian Markets</div>
           </div>
-          <div class="w-px h-8 bg-white/10"></div>
+          <div class="w-px h-8" style="background: var(--border-input);"></div>
           <div class="text-center">
-            <div class="text-sm font-bold text-white/80">NYSE · NASDAQ</div>
-            <div class="text-xs text-white/35 mt-0.5">US Markets</div>
+            <div class="text-sm font-bold" style="color: var(--text-secondary);">NYSE · NASDAQ</div>
+            <div class="text-xs mt-0.5" style="color: var(--text-subtle);">US Markets</div>
           </div>
-          <div class="w-px h-8 bg-white/10"></div>
+          <div class="w-px h-8" style="background: var(--border-input);"></div>
           <div class="text-center">
-            <div class="text-sm font-bold text-white/80">AI</div>
-            <div class="text-xs text-white/35 mt-0.5">Driven Insights</div>
+            <div class="text-sm font-bold" style="color: var(--text-secondary);">AI</div>
+            <div class="text-xs mt-0.5" style="color: var(--text-subtle);">Driven Insights</div>
           </div>
         </div>
       </header>
 
       <!-- ── Form Card ── -->
-      <section id="form-card" class="rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm shadow-2xl shadow-black/40 overflow-hidden">
+      <section id="form-card" class="rounded-2xl backdrop-blur-sm overflow-hidden"
+               style="background: var(--bg-secondary); border: 1px solid var(--border-primary); box-shadow: 0 25px 50px -12px var(--shadow-card);">
 
         <!-- Card header -->
-        <div class="flex items-center gap-4 px-6 py-5 border-b border-white/[0.06] bg-white/[0.02]">
-          <div class="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center text-indigo-400 flex-shrink-0">
+        <div class="flex items-center gap-4 px-6 py-5"
+             style="background: var(--bg-card-header); border-bottom: 1px solid var(--border-secondary);">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+               style="background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo-text);">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -290,8 +353,8 @@ function buildAppShell(): string {
             </svg>
           </div>
           <div>
-            <h2 class="text-base font-bold text-white">Portfolio Configuration</h2>
-            <p class="text-xs text-white/40 mt-0.5">Configure your investment parameters</p>
+            <h2 class="text-base font-bold" style="color: var(--text-primary);">Portfolio Configuration</h2>
+            <p class="text-xs mt-0.5" style="color: var(--text-muted);">Configure your investment parameters</p>
           </div>
         </div>
 
@@ -302,15 +365,18 @@ function buildAppShell(): string {
 
             <!-- Exchange -->
             <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-white/50 uppercase tracking-wider" for="exchange-select">Exchange</label>
+              <label class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);" for="exchange-select">Exchange</label>
               <div class="relative">
-                <select id="exchange-select" class="w-full appearance-none bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-10">
-                  <option value="NSE" class="bg-[#1a1a2e]">NSE — National Stock Exchange</option>
-                  <option value="BSE" class="bg-[#1a1a2e]">BSE — Bombay Stock Exchange</option>
-                  <option value="NYSE" class="bg-[#1a1a2e]">NYSE — New York Stock Exchange</option>
-                  <option value="NASDAQ" class="bg-[#1a1a2e]">NASDAQ</option>
+                <select id="exchange-select" class="w-full appearance-none rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all duration-200 cursor-pointer pr-10"
+                        style="background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary);"
+                        onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
+                        onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'">
+                  <option value="NSE" style="background: var(--option-bg);">NSE — National Stock Exchange</option>
+                  <option value="BSE" style="background: var(--option-bg);">BSE — Bombay Stock Exchange</option>
+                  <option value="NYSE" style="background: var(--option-bg);">NYSE — New York Stock Exchange</option>
+                  <option value="NASDAQ" style="background: var(--option-bg);">NASDAQ</option>
                 </select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--text-chevron);">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </span>
               </div>
@@ -318,14 +384,17 @@ function buildAppShell(): string {
 
             <!-- Horizon -->
             <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-white/50 uppercase tracking-wider" for="horizon-select">Investment Horizon</label>
+              <label class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);" for="horizon-select">Investment Horizon</label>
               <div class="relative">
-                <select id="horizon-select" class="w-full appearance-none bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-10">
-                  <option value="SHORT_TERM" class="bg-[#1a1a2e]">Short Term</option>
-                  <option value="MEDIUM_TERM" selected class="bg-[#1a1a2e]">Medium Term</option>
-                  <option value="LONG_TERM" class="bg-[#1a1a2e]">Long Term</option>
+                <select id="horizon-select" class="w-full appearance-none rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all duration-200 cursor-pointer pr-10"
+                        style="background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary);"
+                        onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
+                        onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'">
+                  <option value="SHORT_TERM" style="background: var(--option-bg);">Short Term</option>
+                  <option value="MEDIUM_TERM" selected style="background: var(--option-bg);">Medium Term</option>
+                  <option value="LONG_TERM" style="background: var(--option-bg);">Long Term</option>
                 </select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--text-chevron);">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </span>
               </div>
@@ -333,14 +402,17 @@ function buildAppShell(): string {
 
             <!-- Risk Profile -->
             <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-white/50 uppercase tracking-wider" for="risk-select">Risk Profile</label>
+              <label class="block text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);" for="risk-select">Risk Profile</label>
               <div class="relative">
-                <select id="risk-select" class="w-full appearance-none bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/60 focus:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-10">
-                  <option value="LOW" class="bg-[#1a1a2e]">Low Risk</option>
-                  <option value="MODERATE" selected class="bg-[#1a1a2e]">Moderate Risk</option>
-                  <option value="HIGH" class="bg-[#1a1a2e]">High Risk</option>
+                <select id="risk-select" class="w-full appearance-none rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all duration-200 cursor-pointer pr-10"
+                        style="background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary);"
+                        onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
+                        onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'">
+                  <option value="LOW" style="background: var(--option-bg);">Low Risk</option>
+                  <option value="MODERATE" selected style="background: var(--option-bg);">Moderate Risk</option>
+                  <option value="HIGH" style="background: var(--option-bg);">High Risk</option>
                 </select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--text-chevron);">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </span>
               </div>
@@ -348,25 +420,28 @@ function buildAppShell(): string {
           </div>
 
           <!-- Divider -->
-          <div class="border-t border-white/[0.06]"></div>
+          <div style="border-top: 1px solid var(--border-secondary);"></div>
 
           <!-- Stocks section -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="flex items-center gap-2 text-sm font-bold text-white/80">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400">
+              <h3 class="flex items-center gap-2 text-sm font-bold" style="color: var(--text-secondary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--indigo-text);">
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                 </svg>
                 Your Stocks
               </h3>
-              <span id="stocks-count" class="px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 text-xs font-semibold">1 stock</span>
+              <span id="stocks-count" class="px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                    style="background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo-text);">1 stock</span>
             </div>
 
             <div id="stocks-container" class="space-y-2"></div>
 
             <button id="add-stock-btn" type="button"
-              class="flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors duration-200 group">
-              <span class="w-6 h-6 rounded-md bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center group-hover:bg-indigo-500/25 transition-colors duration-200">
+              class="flex items-center gap-2 text-sm font-semibold transition-colors duration-200 group"
+              style="color: var(--indigo-text);">
+              <span class="w-6 h-6 rounded-md flex items-center justify-center transition-colors duration-200"
+                    style="background: var(--indigo-bg); border: 1px solid var(--indigo-border);">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               </span>
               Add Another Stock
@@ -376,7 +451,7 @@ function buildAppShell(): string {
           <!-- Analyze button -->
           <div class="pt-2 space-y-3">
             <button id="analyze-btn" type="button"
-              class="relative w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden">
+              class="relative w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden">
               <span class="btn-spinner absolute inset-0 flex items-center justify-center" style="opacity:0">
                 <svg class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
               </span>
@@ -396,7 +471,7 @@ function buildAppShell(): string {
       <section id="results-section" aria-live="polite" aria-label="Analysis Results"></section>
 
       <!-- ── Footer ── -->
-      <footer class="text-center text-xs text-white/20 pb-4">
+      <footer class="text-center text-xs pb-4" style="color: var(--text-subtle);">
         Portfolio Intelligence &middot; AI-powered stock analysis &middot; Data for informational purposes only
       </footer>
 
@@ -407,6 +482,9 @@ function buildAppShell(): string {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export function initApp(root: HTMLElement): void {
+  // Initialize theme before rendering
+  initTheme();
+
   root.innerHTML = buildAppShell();
 
   stocksContainer = document.getElementById('stocks-container') as HTMLElement;
@@ -430,6 +508,9 @@ export function initApp(root: HTMLElement): void {
   analyzeBtn.addEventListener('click', () => { void handleAnalyze(); });
 
   stocksContainer.addEventListener('click', () => setTimeout(updateStocksCount, 300));
+
+  // Wire up theme toggle button
+  document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 }
 
 function updateStocksCount(): void {
