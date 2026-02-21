@@ -303,9 +303,5 @@ jobs:
           echo "✅ Main page accessible!"
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Workflow Outputs
+# End of CI/CD Pipeline
 # ═══════════════════════════════════════════════════════════════════════════════
-outputs:
-  deployed-url:
-    description: 'The URL of the deployed application'
-    value: ${{ jobs.deploy-railway.outputs.url }}
