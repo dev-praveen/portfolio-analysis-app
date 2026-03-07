@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://ai-portfolio-analyser-devpraveen-3908e154.koyeb.app/api/$1"
-    }
-  ]
-}

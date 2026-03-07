@@ -315,7 +315,7 @@ function buildAppShell(): string {
         </div>
         <h1 class="text-5xl sm:text-6xl font-black tracking-tight leading-none">
           Portfolio<br/>
-          <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">Intelligence</span>
+          <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">Synthesis IQ</span>
         </h1>
         <p class="max-w-xl mx-auto text-base sm:text-lg leading-relaxed" style="color: var(--text-muted);">
           Get real-time AI insights and actionable recommendations for your stock portfolio
@@ -474,7 +474,7 @@ function buildAppShell(): string {
 
       <!-- ── Footer ── -->
       <footer class="text-center text-xs pb-4" style="color: var(--text-subtle);">
-        Portfolio Intelligence &middot; AI-powered stock analysis &middot; Data for informational purposes only
+        Portfolio Synthesis IQ &middot; AI-powered stock analysis &middot; Data for informational purposes only
       </footer>
 
     </div>
