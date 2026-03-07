@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
         // All /api/* requests are forwarded to the backend during development.
         // This avoids CORS issues — the browser only ever talks to the Vite origin.
         '/api': {
-          target: env['VITE_API_BASE_URL'] ?? 'http://localhost:8080',
+          target: env['VITE_API_BASE_URL'] ?? 'https://ai-portfolio-analyser-devpraveen-3908e154.koyeb.app',
           changeOrigin: true,
           secure: false,
         },
