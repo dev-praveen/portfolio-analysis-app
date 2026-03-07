@@ -208,6 +208,8 @@ async function handleAnalyze(): Promise<void> {
     renderResults(resultsSection, results, clearResults);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
+    console.error('Analysis error occurred:', err);
+    console.error('Error message:', message);
     state.error = message;
     renderError(resultsSection, message);
   } finally {
