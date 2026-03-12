@@ -35,7 +35,7 @@ function initTheme(): void {
 const state: AppState = {
   stocks: [{ id: crypto.randomUUID(), symbol: '', avgBuyPrice: '' }],
   exchange: 'NSE',
-  horizon: 'MEDIUM_TERM',
+  horizon: 'LONG_TERM',
   riskProfile: 'MODERATE',
   isLoading: false,
   results: [],
@@ -393,8 +393,8 @@ function buildAppShell(): string {
                         onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
                         onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'">
                   <option value="SHORT_TERM" style="background: var(--option-bg);">Short Term</option>
-                  <option value="MEDIUM_TERM" selected style="background: var(--option-bg);">Medium Term</option>
-                  <option value="LONG_TERM" style="background: var(--option-bg);">Long Term</option>
+                  <option value="MEDIUM_TERM" style="background: var(--option-bg);">Medium Term</option>
+                  <option value="LONG_TERM" selected style="background: var(--option-bg);">Long Term</option>
                 </select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--text-chevron);">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -541,10 +541,10 @@ function clearResults(): void {
 
   // Reset the select dropdowns to their defaults
   exchangeSelect.value = 'NSE';
-  horizonSelect.value = 'MEDIUM_TERM';
+  horizonSelect.value = 'LONG_TERM';
   riskSelect.value = 'MODERATE';
   state.exchange = 'NSE';
-  state.horizon = 'MEDIUM_TERM';
+  state.horizon = 'LONG_TERM';
   state.riskProfile = 'MODERATE';
 
   // Hide any lingering inline validation error
