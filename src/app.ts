@@ -410,9 +410,9 @@ function buildAppShell(): string {
                         style="background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary);"
                         onfocus="this.style.borderColor='var(--border-focus)'; this.style.background='var(--bg-input-focus)'"
                         onblur="this.style.borderColor='var(--border-input)'; this.style.background='var(--bg-input)'">
-                  <option value="LOW" style="background: var(--option-bg);">Low Risk</option>
-                  <option value="MODERATE" selected style="background: var(--option-bg);">Moderate Risk</option>
-                  <option value="HIGH" style="background: var(--option-bg);">High Risk</option>
+                  <option value="LOW" style="background: var(--option-bg);">Low</option>
+                  <option value="MODERATE" selected style="background: var(--option-bg);">Moderate</option>
+                  <option value="HIGH" style="background: var(--option-bg);">High</option>
                 </select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" style="color: var(--text-chevron);">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
